@@ -18,6 +18,7 @@ public class PlayerScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
         helper = gameObject.AddComponent<HelperScript>();
 
         isJumping = false;
@@ -32,6 +33,8 @@ public class PlayerScript : MonoBehaviour
         DoLand();
         DoShoot();
         DoAttack();
+
+        helper.DoRayCollisionCheck();
         
     }
 
@@ -146,7 +149,8 @@ public class PlayerScript : MonoBehaviour
         {
             anim.SetTrigger("attack");
         }
-        return;
+
+        /*
         float animPosition = anim.GetCurrentAnimatorStateInfo(0).normalizedTime;
 
         AnimatorClipInfo[] animInfo = anim.GetCurrentAnimatorClipInfo(0);
@@ -157,6 +161,7 @@ public class PlayerScript : MonoBehaviour
         {
             //print("Attack mode");
         }
+        */
     }
 
     private void OnCollisionStay2D(Collision2D collision)

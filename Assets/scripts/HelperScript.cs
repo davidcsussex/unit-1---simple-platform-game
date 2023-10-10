@@ -6,10 +6,16 @@ using static Globals;
 
 public class HelperScript : MonoBehaviour
 {
+    LayerMask groundLayerMask;
 
     public void FlipObject( bool flip )
     {
         FlipObject( gameObject, flip );
+    }
+
+    public void Start()
+    {
+        groundLayerMask = LayerMask.GetMask("Ground");
     }
 
 
@@ -40,8 +46,34 @@ public class HelperScript : MonoBehaviour
         FlipObject( instance, xvel<0);
     }
 
+    public void DoRayCollisionCheck()
+    {
+        float rayLength = 0.5f; // length of raycast
 
-    
+
+        //cast a ray downward 
+        RaycastHit2D hit;
+        Vector3 offset = new Vector3(0, -0.5f, 0);
+
+        hit = Physics2D.Raycast(transform.position + offset, -Vector2.up, rayLength, groundLayerMask);
+
+        Color hitColor = Color.white;
+
+
+        if (hit.collider != null)
+        {
+            print("Player has collided with Ground layer");
+            hitColor = Color.green;
+        }
+        // draw a debug ray to show ray position
+        // You need to enable gizmos in the editor to see these
+        Debug.DrawRay(transform.position + offset, -Vector2.up * rayLength, hitColor);
+
+    }
+
+
+
+
 
 
 }
