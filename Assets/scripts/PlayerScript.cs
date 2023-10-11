@@ -29,7 +29,7 @@ public class PlayerScript : MonoBehaviour
     void Update()
     {
         DoJump();
-        DoMove();
+        DoRun();
         DoLand();
         DoShoot();
         DoAttack();
@@ -40,23 +40,24 @@ public class PlayerScript : MonoBehaviour
 
     void DoJump()
     {
-        Vector2 velocity = rb.velocity;
 
         // check for jump
-        if (Input.GetKey("space") && (isGrounded==true) )
+        if (Input.GetKey(KeyCode.LeftAlt) && (isGrounded==true) )
         {
-           velocity.y = 6.5f;    // give the player a positive velocity in the y axis
            anim.SetBool("jump",true);
            isJumping = true;
+
+           // give the player a positive velocity in the y axis, and preserve the x velocity
+           rb.velocity = new Vector3(rb.velocity.x, 8.5f, 0);
         }
 
-        rb.velocity = velocity;
+        
 
     }
 
     
 
-    void DoMove()
+    void DoRun()
     {
         Vector2 velocity = rb.velocity;
 
@@ -66,14 +67,14 @@ public class PlayerScript : MonoBehaviour
         // check for moving left
         if ( Input.GetKey("left"))
         {
-            velocity.x = -2;
+            velocity.x = -3;
         }
 
         // check for moving right
         
         if (Input.GetKey("right"))
         {
-            velocity.x = 2;
+            velocity.x = 3;
         }
 
         if( velocity.x != 0 && (isJumping==false))
