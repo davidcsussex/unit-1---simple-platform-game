@@ -34,8 +34,8 @@ public class PlayerScript : MonoBehaviour
         DoShoot();
         DoAttack();
 
-        helper.DoRayCollisionCheck();
-        
+        isGrounded = helper.ExtendedRayCollisionCheck( 0, -0.6f );
+
     }
 
     void DoJump()
