@@ -26,6 +26,9 @@ public class PenguinScript : MonoBehaviour
     {
         DoMove();
         DoJump();
+        
+        DoFall();
+
         DoLand();
     }
 
@@ -35,12 +38,25 @@ public class PenguinScript : MonoBehaviour
         // check for jump
         if (Input.GetKeyDown(KeyCode.LeftAlt) && (isGrounded == true))
         {
-            anim.SetBool("jump", true);
             isJumping = true;
 
             // give the player a positive velocity in the y axis, and preserve the x velocity
             rb.velocity = new Vector3(rb.velocity.x, 8.5f, 0);
         }
+
+        if (isJumping == true)
+        {
+            if (rb.velocity.y < -1)
+            {
+                anim.SetBool("fall", true);
+            }
+            if (rb.velocity.y > 0)
+            {
+                anim.SetBool("jump", true);
+            }
+
+        }
+
     }
 
     void DoMove()
@@ -49,23 +65,28 @@ public class PenguinScript : MonoBehaviour
         if ( Input.GetKey("left"))
         {
             rb.velocity = new Vector2(-2, rb.velocity.y);
-            anim.SetBool("walk", true);
         }
 
         if (Input.GetKey("right"))
         {
             rb.velocity = new Vector2(2, rb.velocity.y);
-            anim.SetBool("walk", true);
+            
         }
 
-        if( rb.velocity.x < 0 )
+        if( rb.velocity.x < -0.1f )
         {
             sr.flipX = true;
         }
 
-        if (rb.velocity.x > 0)
+        if (rb.velocity.x > 0.1f)
         {
             sr.flipX = false;
+        }
+
+        if( rb.velocity.x != 0 && isJumping == false && rb.velocity.y >= 0)
+        {
+            anim.SetBool("walk", true);
+
         }
 
     }
@@ -74,13 +95,27 @@ public class PenguinScript : MonoBehaviour
     {
         // check for player landing
 
-        if (isJumping && isGrounded && (rb.velocity.y <= 0))
+        if ( isGrounded && (rb.velocity.y <= 0))
         {
             print("landed!");
             // player was jumping and has now hit the ground
             isJumping = false;
             anim.SetBool("jump", false);
+            anim.SetBool("fall", false);
         }
+    }
+
+    void DoFall()
+    {
+        if( isJumping == false && isGrounded == false && rb.velocity.y <= 0)
+        {
+            anim.SetBool("fall", true);
+        }
+    }
+
+    void AttackEnded()
+    {
+        anim.SetBool("attack", false);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
