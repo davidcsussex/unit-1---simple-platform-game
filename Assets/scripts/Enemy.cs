@@ -40,7 +40,7 @@ public class Enemy : MonoBehaviour
 
         //print("player x position = " + player.transform.position.x);
 
-        if ( player.transform.position.x < transform.position.x )
+        if ( player.transform.position.x > transform.position.x )
         {
             helper.FlipObject(gameObject,true);
         }
