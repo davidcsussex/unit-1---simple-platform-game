@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class PenguinScript : MonoBehaviour
@@ -8,6 +9,7 @@ public class PenguinScript : MonoBehaviour
     Rigidbody2D rb;
     SpriteRenderer sr;
     bool isGrounded, isJumping;
+    HelperScript hs;
 
     // Start is called before the first frame update
     void Start()
@@ -15,6 +17,8 @@ public class PenguinScript : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+
+        hs = gameObject.AddComponent<HelperScript>();
 
         isGrounded = true;
         isJumping = false;
@@ -75,12 +79,13 @@ public class PenguinScript : MonoBehaviour
 
         if( rb.velocity.x < -0.1f )
         {
-            sr.flipX = true;
+            hs.FlipObject(true);
         }
 
         if (rb.velocity.x > 0.1f)
         {
-            sr.flipX = false;
+            hs.FlipObject(false);
+
         }
 
         if( rb.velocity.x != 0 && isJumping == false && rb.velocity.y >= 0)

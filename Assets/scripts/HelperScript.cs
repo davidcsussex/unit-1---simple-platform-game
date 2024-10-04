@@ -7,6 +7,8 @@ using static Globals;
 public class HelperScript : MonoBehaviour
 {
     LayerMask groundLayerMask;
+    SpriteRenderer sr;
+
 
     public void FlipObject( bool flip )
     {
@@ -16,12 +18,12 @@ public class HelperScript : MonoBehaviour
     public void Start()
     {
         groundLayerMask = LayerMask.GetMask("Ground");
+        sr = gameObject.GetComponent<SpriteRenderer>();
     }
 
 
     public void FlipObject(GameObject obj, bool flip )
     {
-        SpriteRenderer sr = gameObject.GetComponent<SpriteRenderer>();
 
         sr.flipX = flip;
     }

@@ -5,6 +5,13 @@ using UnityEngine;
 using static Globals;
 
 
+enum State
+{
+    Idle,
+    Walk,
+    Wait,
+    Attack
+}
 
 
 public class Enemy : MonoBehaviour
@@ -14,35 +21,70 @@ public class Enemy : MonoBehaviour
     private Animator anim;
     public GameObject spear;
     HelperScript helper;
+    float delay;
+    Rigidbody2D rb;
+    bool isAttacking;
+    bool playerInRange;
+    float waitDelay;
+    float dist;
 
-    
+    State state;
+    State stateAfterWait;   // state to enter when wait has reached 0
+
+
 
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         helper = gameObject.AddComponent<HelperScript>();
+        rb = gameObject.GetComponent<Rigidbody2D>();
+        delay = 0;
+        anim.SetBool("walk", false);
 
-        
+        isAttacking = false;
+        playerInRange = false;
+
+        state = State.Idle;
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        dist = player.transform.position.x - transform.position.x;
 
-        //trigger enemy throw
+        EnemyFacePlayer();
 
-        if( Input.GetKey("t"))
+        if (state == State.Idle)
         {
-            anim.Play("throw");
+            EnemyIdle();
         }
 
-        //print("player x position = " + player.transform.position.x);
-
-        if ( player.transform.position.x > transform.position.x )
+        if (state == State.Walk)
         {
-            helper.FlipObject(gameObject,true);
+            EnemyWalk();
+        }
+        if (state == State.Attack)
+        {
+            EnemyAttack();
+        }
+
+        if (state == State.Wait)
+        {
+            EnemyWait();
+        }
+
+        print("state=" + state + "  dist=" + dist);
+
+
+    }
+
+    void EnemyFacePlayer()
+    {
+        if (player.transform.position.x < transform.position.x)
+        {
+            helper.FlipObject(gameObject, true);
         }
         else
         {
@@ -51,55 +93,103 @@ public class Enemy : MonoBehaviour
     }
 
 
-
-    void DoThrow()
+    void EnemyIdle()
     {
-        /*
-        float x, y;
-
-        x = transform.position.x;
-        y = transform.position.y+3;
-
-        GameObject newSpear = Instantiate(spear, new Vector3(x,y,0), Quaternion.identity);
-
-        Rigidbody2D rb = newSpear.GetComponent<Rigidbody2D>();
-
-        // if enemy is facing left, throw the spear to the left
-        if( helper.GetObjectDir() == Left )
+        //check for player in range
+        
+        if (dist > -1.9f && dist <1.9f )
         {
-            rb.velocity = new Vector3(-35, 4, 0);
-            helper.FlipObject(newSpear, true);
+            //player is in range of enemy
         }
         else
         {
-            rb.velocity = new Vector3(35, 4, 0);
-            helper.FlipObject(newSpear, false);
-        }
-        */
+            state = State.Walk;
 
+        }
+    }
+
+    void EnemyWait()
+    {
+        waitDelay-=Time.deltaTime;
+        if( waitDelay < 0)
+        {
+            state = stateAfterWait;
+        }
+    }
+    void EnemyWalk()
+    {
+        if( dist < 0  )
+        {
+            rb.velocity = new Vector2(-2, 0);
+        }
+        else
+        {
+            rb.velocity = new Vector2(2, 0);
+        }
+        anim.SetBool("walk", true);
+
+        if( playerInRange )
+        {
+            state = State.Attack;
+        }
         
     }
 
-
-    void OnCollisionEnter2D( Collision2D col )
+    void EnemyAttack()
     {
-        print("tag=" + col.gameObject.tag );
-        
-        if( col.gameObject.tag == "Bullet")
+        anim.SetBool("attack", true);
+        anim.SetBool("walk", false);
+        rb.velocity=new Vector2(0, 0);
+    }
+
+    public void EnemyAttackFinished()
+    {
+        anim.SetBool("attack", false);
+        state = State.Wait;
+        waitDelay = 2;
+        stateAfterWait = State.Walk;
+
+
+    }
+
+
+
+
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        print("tag=" + col.gameObject.tag);
+
+        if (col.gameObject.tag == "Bullet")
         {
             print("I've been hit by a bullet!");
 
         }
     }
 
-    void OnTriggerEnter2D( Collider2D col )
+    void OnTriggerEnter2D(Collider2D col)
     {
-        print("col=" + col.isTrigger );
-        if( col.tag == "Bullet")
+        if (col.gameObject.tag == "Player")
+        {
+            playerInRange = true;
+        }
+
+
+
+        print("col=" + col.isTrigger);
+        if (col.tag == "Bullet")
         {
             print("Trigger - I've been hit by a bullet!");
             Destroy(col.gameObject);
         }
     }
 
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if (col.gameObject.tag == "Player")
+        {
+            playerInRange = false;
+        }
+
+    }
 }
