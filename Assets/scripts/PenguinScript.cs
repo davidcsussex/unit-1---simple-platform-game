@@ -68,12 +68,12 @@ public class PenguinScript : MonoBehaviour
         anim.SetBool("walk", false);
         if ( Input.GetKey("left"))
         {
-            rb.velocity = new Vector2(-2, rb.velocity.y);
+            rb.velocity = new Vector2(-2.5f, rb.velocity.y);
         }
 
         if (Input.GetKey("right"))
         {
-            rb.velocity = new Vector2(2, rb.velocity.y);
+            rb.velocity = new Vector2(2.5f, rb.velocity.y);
             
         }
 
